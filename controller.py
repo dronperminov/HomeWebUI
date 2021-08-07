@@ -1,13 +1,15 @@
+import re
 import paho.mqtt.client as mqtt
 from device import Device
 
 
 class Controller:
-    def __init__(self, address, port = 1883):
+    def __init__(self, address, port, devices_filename):
         self.devices = dict()
         self.client = self.init_client()
         self.client.connect(address, port, 60)
         self.client.loop_start()
+        self.read_devices(devices_filename)
 
     def init_client(self):
         client = mqtt.Client()
@@ -16,6 +18,17 @@ class Controller:
         client.on_message = self.on_message
 
         return client
+
+    def read_devices(self, filename):
+        with open(filename, encoding='utf-8') as f:
+            lines = [line for line in f.read().splitlines() if line]
+
+        for line in lines:
+            params = re.findall(r'\"[\w \-]+\"|[\w\-]+', line)
+            params = [re.sub(r'"', '', param) for param in params]
+
+            device = Device(params[1], params[2], params[3])
+            self.add_device(params[0], device)
 
     def on_connect(self, client, userdata, flags, rc):
         print(f'Connected with result code {rc}')
@@ -39,7 +52,8 @@ class Controller:
         if not command:
             return
 
-        args = command.split()
+        args = re.findall(r'\"[\w \-]+\"|[\w\-]+', command)
+        args = [re.sub(r'"', '', arg) for arg in args]
 
         if len(args) == 0 or len(args) > 3:
             print('Invalid command')

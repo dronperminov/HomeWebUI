@@ -1,0 +1,11 @@
+Санузел wb-mdm3_14 K1 "Channel 1"
+Балкон wb-mdm3_14 K2 "Channel 2"
+Коридор wb-mdm3_14 K3 "Channel 3"
+
+Спальня wb-mdm3_34 K3 "Channel 3"
+"Бра Андрей" wb-mdm3_34 K1 "Channel 1"
+"Бра Света" wb-mdm3_34 K2 "Channel 2"
+
+Столешница wb-mdm3_30 K1 "Channel 1"
+Гостиная wb-mdm3_30 K2 "Channel 2"
+Кухня wb-mdm3_30 K3 "Channel 3"
