@@ -45,8 +45,8 @@ class Controller:
 
     def add_device(self, name: str, device: Device):
         self.devices[name] = device
-        self.client.subscribe(device.state_topic)
-        self.client.subscribe(device.value_topic)
+        self.client.subscribe(device.state_topic_get)
+        self.client.subscribe(device.value_topic_get)
 
     def process_command(self, command):
         if not command:
