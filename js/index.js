@@ -66,6 +66,13 @@ function ToggleGroup(id) {
     $('#' + id + '-caret').text(isDisplayed ? '►' : '▼')
 }
 
+function TurnOffAll() {
+    for (let i = 0; i < device_states.length; i++) {
+        device_states[i].checked = false
+        UpdateDevice(device_ids[i])
+    }
+}
+
 setInterval(function() {
     $.get(`/devices`, UpdateDevicesContent)
 }, 500)

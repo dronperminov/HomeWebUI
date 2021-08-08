@@ -83,6 +83,9 @@ def index():
             <h1>Наше гнёздышко</h1>
             {groups_html}
 
+            <div class="buttons">
+                <div class="button" onclick="TurnOffAll()">Выключить всё</div>
+            </div>
             <script src="/js/jquery-3.6.0.min.js"></script>
             <script src="/js/index.js?v={js}"></script>
         </body>

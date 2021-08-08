@@ -41,7 +41,7 @@ h1 {
 }
 
 .device:hover {
-    border: 2px solid #9fd468;
+    border: 2px solid #4caf50;
     margin: -1px;
 }
 
@@ -63,6 +63,7 @@ h1 {
     font-size: 15px;
 }
 
+
 @media (min-width: 801px) and (max-width: 1200px) {
     .devices { grid-template-columns: repeat(3, 1fr); }
 }
@@ -73,6 +74,7 @@ h1 {
 
 @media (max-width: 500px) {
     .devices { grid-template-columns: 1fr; }
+    .buttons { text-align: center }
     h1 { text-align: center }
 }
 
@@ -83,3 +85,6 @@ h1 {
 .switch-checkbox-text:after { content: ""; position: absolute; left: 0.1em; bottom: 0.3em; width: 0.6em; height: 0.6em; border-radius: 100%; background: #fff; transition: .3s; }
 .switch-checkbox input:checked + .switch-checkbox-text:before { background: #9fd468; }
 .switch-checkbox input:checked + .switch-checkbox-text:after { left: 0.6em; }
+
+.button { cursor: pointer; border: 1px solid #000; padding: 10px; display: inline-block; }
+.button:hover { border: 2px solid #4caf50; color: #4caf50; margin: -1px; }
