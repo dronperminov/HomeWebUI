@@ -1,11 +1,12 @@
 import re
+from collections import OrderedDict
 import paho.mqtt.client as mqtt
 from device import Device
 
 
 class Controller:
     def __init__(self, address, port, devices_filename):
-        self.devices = dict()
+        self.devices = OrderedDict()
         self.client = self.init_client()
         self.client.connect(address, port, 60)
         self.client.loop_start()
