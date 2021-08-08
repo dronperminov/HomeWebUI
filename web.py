@@ -18,6 +18,11 @@ def css_file(filename):
     return send_from_directory(app.config['CSS_FOLDER'], filename)
 
 
+@app.route('/images/<filename>')
+def image_file(filename):
+    return send_from_directory(app.config['IMAGES_FOLDER'], filename)
+
+
 def device_to_html(name, device):
     return '''
     <div class="device" id="{name}" ondblclick="ToggleDevice('{name}')">
@@ -93,6 +98,7 @@ def main():
     path = os.path.dirname(__file__)
     app.config['JS_FOLDER'] = os.path.join(path, 'js')
     app.config['CSS_FOLDER'] = os.path.join(path, 'css')
+    app.config['IMAGES_FOLDER'] = os.path.join(path, 'images')
     app.run(debug=debug, host=host, port=port)
 
 
