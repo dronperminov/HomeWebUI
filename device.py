@@ -2,7 +2,7 @@ class Device:
     def __init__(self, dev, state, channel=None):
         self.dev = dev
         self.state = 0
-        self.value = 100
+        self.value = None if channel is None else 100
 
         self.state_topic = '/devices/{dev}/controls/{state}/on'.format(dev=dev, state=state)
         self.value_topic = '/devices/{dev}/controls/{channel}/on'.format(dev=dev, channel=channel)

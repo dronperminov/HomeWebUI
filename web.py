@@ -1,4 +1,5 @@
 import os
+import hashlib
 from flask import Flask
 from flask import request, send_from_directory
 from controller import Controller
@@ -6,6 +7,11 @@ from controller import Controller
 
 app = Flask(__name__)
 controller = Controller('192.168.0.117', 1883, 'devices.txt')
+
+
+def get_md5(filename):
+    with open(filename, 'rb') as f:
+        return hashlib.md5(f.read()).hexdigest()
 
 
 @app.route('/js/<filename>')
@@ -24,15 +30,24 @@ def image_file(filename):
 
 
 def device_to_html(name, device):
+    checked = "checked" if device.state == 1 else ""
+    hide = 'style="display:none"' if device.value is None else ''
+
     return '''
     <div class="device" id="{name}" ondblclick="ToggleDevice('{name}')">
-        <div class="device-row"><label class="switch-checkbox"><input type="checkbox" id="{name}-state" {checked} onchange="UpdateDevice('{name}')"><span class="switch-checkbox-text"><b>{name}</b></span></label></div>
-        <div class="device-row device-value">
-            <input type="range" class="device-value-track" id="{name}-value" min="0" max="100" step="5" value="{value}" title="{value}" onchange="UpdateDevice('{name}')" oninput="DisableUpdate('{name}')">
+        <div class="device-row">
+            <label class="switch-checkbox">
+                <input type="checkbox" id="{name}-state" {checked} onchange="UpdateDevice('{name}')">
+                <span class="switch-checkbox-text"><b>{name}</b></span>
+            </label>
+        </div>
+        <div class="device-row device-value"{hide}>
+            <input type="range" class="device-value-track" id="{name}-value" min="0" max="100" step="5" value="{value}"
+                title="{value}" onchange="UpdateDevice('{name}')" oninput="DisableUpdate('{name}')">
             <span class="device-value-span" id="{name}-value-span">{value}</span>
         </div>
     </div>
-    '''.format(name=name, value=device.value, checked="checked" if device.state == 1 else "")
+    '''.format(name=name, value=device.value, checked=checked, hide=hide)
 
 
 def group_to_html(group):
@@ -53,6 +68,8 @@ def group_to_html(group):
 @app.route('/', methods=['GET'])
 def index():
     groups_html = "\n".join([group_to_html(group) for group in controller.groups])
+    css = get_md5(app.config["CSS_FOLDER"] + "/styles.css")
+    js = get_md5(app.config["JS_FOLDER"] + "/index.js")
 
     return '''
         <html>
@@ -60,17 +77,17 @@ def index():
             <title>Управление светом</title>
             <meta charset='utf-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <link rel="stylesheet" type="text/css" href="/css/styles.css">
+            <link rel="stylesheet" type="text/css" href="/css/styles.css?v={css}">
         </head>
         <body>
             <h1>Наше гнёздышко</h1>
             {groups_html}
 
             <script src="/js/jquery-3.6.0.min.js"></script>
-            <script src="/js/index.js"></script>
+            <script src="/js/index.js?v={js}"></script>
         </body>
         </html>
-    '''.format(groups_html=groups_html)
+    '''.format(groups_html=groups_html, css=css, js=js)
 
 
 @app.route('/device/<device_name>', methods=['POST'])

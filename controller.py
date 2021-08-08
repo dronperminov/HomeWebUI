@@ -48,7 +48,7 @@ class Controller:
             params = self.args_regexp.findall(line)
             params = [re.sub(r'"', '', param) for param in params]
 
-            device = Device(params[1], params[2], params[3])
+            device = Device(*params[1:])
             self.add_device(params[0], device)
 
             if group is not None:
