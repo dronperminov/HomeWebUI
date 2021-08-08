@@ -1,10 +1,7 @@
 import os
-
 from flask import Flask
-from flask import request, redirect, send_from_directory, url_for
-
+from flask import request, send_from_directory
 from controller import Controller
-from device import Device
 
 
 app = Flask(__name__)
@@ -25,19 +22,32 @@ def device_to_html(name, device):
     return '''
     <div class="device" id="{name}" ondblclick="ToggleDevice('{name}')">
         <div class="device-row"><label class="switch-checkbox"><input type="checkbox" id="{name}-state" {checked} onchange="UpdateDevice('{name}')"><span class="switch-checkbox-text"><b>{name}</b></span></label></div>
-        <div class="device-row">
-            <b>Яркость:</b> 
-            <span class="device-value">
-                <input type="range" class="device-value-track" id="{name}-value" min="0" max="100" step="5" value="{value}" title="{value}" onchange="UpdateDevice('{name}')" oninput="DisableUpdate('{name}')">
-                <span class="device-value-span" id="{name}-value-span">{value}</span>
-            </span>
+        <div class="device-row device-value">
+            <input type="range" class="device-value-track" id="{name}-value" min="0" max="100" step="5" value="{value}" title="{value}" onchange="UpdateDevice('{name}')" oninput="DisableUpdate('{name}')">
+            <span class="device-value-span" id="{name}-value-span">{value}</span>
         </div>
     </div>
     '''.format(name=name, value=device.value, checked="checked" if device.state == 1 else "")
 
+
+def group_to_html(group):
+    devices = "\n".join([device_to_html(name, group.devices[name]) for name in group.devices])
+    hide = ' style="display:none"' if group.need_hide else ''
+    caret = '►' if group.need_hide else '▼'
+
+    return '''
+        <div class="group" id="{name}">
+            <div class="group-name" onclick="ToggleGroup('{name}')">
+                <span class="group-caret" id="{name}-caret">{caret}</span>{name}
+            </div>
+            <div class="devices" id="{name}-devices"{hide}>{devices}</div>
+        </div>
+    '''.format(name=group.name, devices=devices, hide=hide, caret=caret)
+
+
 @app.route('/', methods=['GET'])
 def index():
-    devices_html = "\n".join([device_to_html(name, controller.devices[name]) for name in controller.devices])
+    groups_html = "\n".join([group_to_html(group) for group in controller.groups])
 
     return '''
         <html>
@@ -49,15 +59,14 @@ def index():
         </head>
         <body>
             <h1>Наше гнёздышко</h1>
-            <div class="devices">
-                {devices_html}
-            </div>
+            {groups_html}
 
             <script src="/js/jquery-3.6.0.min.js"></script>
             <script src="/js/index.js"></script>
         </body>
         </html>
-    '''.format(devices_html=devices_html)
+    '''.format(groups_html=groups_html)
+
 
 @app.route('/device/<device_name>', methods=['POST'])
 def device(device_name):

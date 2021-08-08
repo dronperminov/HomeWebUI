@@ -13,6 +13,13 @@ for (device of devices) {
     is_updating.push(false)
 }
 
+let groups = document.getElementsByClassName('group')
+let device_groups = []
+
+for (group of groups) {
+    device_groups.push(document.getElementById(group.id + '-devices'))
+}
+
 function DisableUpdate(id) {
     let index = device_ids.indexOf(id)
     is_updating[index] = true
@@ -49,6 +56,14 @@ function UpdateDevicesContent(data, status) {
         device_values[i].title = data["devices"][i].value
         device_value_spans[i].innerHTML = data["devices"][i].value
     }
+}
+
+function ToggleGroup(id) {
+    let groupDevices = $('#' + id + '-devices')
+    let isDisplayed = groupDevices.css('display') != 'none'
+
+    groupDevices.slideToggle()
+    $('#' + id + '-caret').text(isDisplayed ? '►' : '▼')
 }
 
 setInterval(function() {

@@ -2,11 +2,15 @@ import re
 from collections import OrderedDict
 import paho.mqtt.client as mqtt
 from device import Device
+from group import Group
 
 
 class Controller:
     def __init__(self, address, port, devices_filename):
         self.devices = OrderedDict()
+        self.groups = []
+        self.args_regexp = re.compile(r'\"[\w ()\-]+\"|[\w\-]+')
+
         self.client = self.init_client()
         self.client.connect(address, port, 60)
         self.client.loop_start()
@@ -24,12 +28,31 @@ class Controller:
         with open(filename, encoding='utf-8') as f:
             lines = [line for line in f.read().splitlines() if line]
 
+        group = None
+
         for line in lines:
-            params = re.findall(r'\"[\w \-]+\"|[\w\-]+', line)
+            if line.startswith('begin_group'):
+                group = Group(line[12:], False)
+                self.groups.append(group)
+                continue
+
+            if line.startswith('begin_hidden_group'):
+                group = Group(line[19:], True)
+                self.groups.append(group)
+                continue
+
+            if line.startswith('end_group'):
+                group = None
+                continue
+
+            params = self.args_regexp.findall(line)
             params = [re.sub(r'"', '', param) for param in params]
 
             device = Device(params[1], params[2], params[3])
             self.add_device(params[0], device)
+
+            if group is not None:
+                group.add_device(params[0], device)
 
     def on_connect(self, client, userdata, flags, rc):
         print('Connected with result code {rc}'.format(rc=rc))
@@ -53,7 +76,7 @@ class Controller:
         if not command:
             return
 
-        args = re.findall(r'\"[\w \-]+\"|[\w\-]+', command)
+        args = self.args_regexp.findall(command)
         args = [re.sub(r'"', '', arg) for arg in args]
 
         if len(args) == 0 or len(args) > 3:

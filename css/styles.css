@@ -1,3 +1,23 @@
+h1 {
+    margin-bottom: 0
+}
+
+.group {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #000;
+}
+
+.group-name {
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.group-caret {
+    font-size: 16px;
+}
+
 .devices {
     width: 100%;
     display: grid;
@@ -25,12 +45,13 @@
 }
 
 .device-value {
-    display: inline-grid;
     text-align: center;
+    width: 100%;
 }
 
 .device-value-track {
     margin-bottom: -5px;
+    width: 100%;
 }
 
 .device-value-span {

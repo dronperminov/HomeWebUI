@@ -1,5 +1,5 @@
 class Device:
-    def __init__(self, dev, state, channel = None):
+    def __init__(self, dev, state, channel=None):
         self.dev = dev
         self.state = 0
         self.value = 100
@@ -27,7 +27,7 @@ class Device:
         return False
 
     def log(self):
-        print('{self.dev}: value = {self.value}, state = {self.state}'.format(dev=dev, value=value, state=state))
+        print('{dev}: value = {value}, state = {state}'.format(dev=self.dev, value=self.value, state=self.state))
 
     def to_json(self):
         return {"state": self.state, "value": self.value}
