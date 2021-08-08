@@ -4,10 +4,10 @@ class Device:
         self.state = 0
         self.value = 100
 
-        self.state_topic = f'/devices/{dev}/controls/{state}/on'
-        self.value_topic = f'/devices/{dev}/controls/{channel}/on'
-        self.state_topic_get = f'/devices/{dev}/controls/{state}'
-        self.value_topic_get = f'/devices/{dev}/controls/{channel}'
+        self.state_topic = '/devices/{dev}/controls/{state}/on'.format(dev=dev, state=state)
+        self.value_topic = '/devices/{dev}/controls/{channel}/on'.format(dev=dev, channel=channel)
+        self.state_topic_get = '/devices/{dev}/controls/{state}'.format(dev=dev, state=state)
+        self.value_topic_get = '/devices/{dev}/controls/{channel}'.format(dev=dev, channel=channel)
 
     def set_state(self, client, state):
         client.publish(self.state_topic, state)
@@ -27,7 +27,7 @@ class Device:
         return False
 
     def log(self):
-        print(f'{self.dev}: value = {self.value}, state = {self.state}')
+        print('{self.dev}: value = {self.value}, state = {self.state}'.format(dev=dev, value=value, state=state))
 
     def to_json(self):
         return {"state": self.state, "value": self.value}

@@ -31,10 +31,10 @@ class Controller:
             self.add_device(params[0], device)
 
     def on_connect(self, client, userdata, flags, rc):
-        print(f'Connected with result code {rc}')
+        print('Connected with result code {rc}'.format(rc=rc))
 
     def on_disconnect(self, client, userdata, rc):
-        print(f'Disconnected with code. {rc}')
+        print('Disconnected with code. {rc}'.format(rc=rc))
 
     def on_message(self, client, userdata, msg):
         for device in self.devices.values():
@@ -62,7 +62,7 @@ class Controller:
         device = self.devices.get(args[0], None)
 
         if device is None:
-            print(f'Unknown device')
+            print('Unknown device')
             return
 
         if len(args) == 1:

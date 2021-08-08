@@ -22,33 +22,33 @@ def css_file(filename):
 
 
 def device_to_html(name, device):
-    return f'''
+    return '''
     <div class="device" id="{name}" ondblclick="ToggleDevice('{name}')">
-        <div class="device-row"><label class="switch-checkbox"><input type="checkbox" id="{name}-state" {"checked" if device.state == 1 else ""} onchange="UpdateDevice('{name}')"><span class="switch-checkbox-text"><b>{name}</b></span></label></div>
+        <div class="device-row"><label class="switch-checkbox"><input type="checkbox" id="{name}-state" {checked} onchange="UpdateDevice('{name}')"><span class="switch-checkbox-text"><b>{name}</b></span></label></div>
         <div class="device-row">
             <b>Яркость:</b> 
             <span class="device-value">
-                <input type="range" class="device-value-track" id="{name}-value" min="0" max="100" value="{device.value}" title="{device.value}" onchange="UpdateDevice('{name}')" oninput="DisableUpdate('{name}')">
-                <span class="device-value-span" id="{name}-value-span">{device.value}</span>
+                <input type="range" class="device-value-track" id="{name}-value" min="0" max="100" step="5" value="{value}" title="{value}" onchange="UpdateDevice('{name}')" oninput="DisableUpdate('{name}')">
+                <span class="device-value-span" id="{name}-value-span">{value}</span>
             </span>
         </div>
     </div>
-    '''
+    '''.format(name=name, value=device.value, checked="checked" if device.state == 1 else "")
 
 @app.route('/', methods=['GET'])
 def index():
     devices_html = "\n".join([device_to_html(name, controller.devices[name]) for name in controller.devices])
 
-    return f'''
+    return '''
         <html>
         <head>
-            <title>Управление светом | Наше гнёздышко</title>
+            <title>Управление светом</title>
             <meta charset='utf-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
             <link rel="stylesheet" type="text/css" href="/css/styles.css">
         </head>
         <body>
-            <h1>Управление светом | Наше гнёздышко</h1>
+            <h1>Наше гнёздышко</h1>
             <div class="devices">
                 {devices_html}
             </div>
@@ -57,13 +57,17 @@ def index():
             <script src="/js/index.js"></script>
         </body>
         </html>
-    '''
+    '''.format(devices_html=devices_html)
 
 @app.route('/device/<device_name>', methods=['POST'])
 def device(device_name):
     state = request.form["state"]
     value = request.form["value"]
-    controller.process_command(f'{device_name} {state} {value}')
+
+    if ' ' in device_name:
+        device_name = '"' + device_name + '"'
+
+    controller.process_command('{device_name} {state} {value}'.format(device_name=device_name, state=state, value=value))
     return {"status": "OK"}
 
 
